@@ -6,9 +6,11 @@ class Searchbar extends Component {
   state = {
     value: "",
   };
+
   onChange = (e) => {
     this.setState({ value: e.currentTarget.value.toLowerCase() });
   };
+
   handleSubmit = (event) => {
     event.preventDefault();
     this.props.onSubmit(this.state.value);
@@ -26,6 +28,7 @@ class Searchbar extends Component {
       return;
     }
   };
+
   render() {
     return (
       <header className={s.Searchbar}>

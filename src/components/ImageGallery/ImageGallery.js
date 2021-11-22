@@ -6,7 +6,7 @@ import Button from "../Button/Button";
 import { ToastContainer } from "react-toastify";
 import ImageGalleryItem from "../ImageGalleryItem/ImageGalleryItem";
 import "react-toastify/dist/ReactToastify.css";
-
+import imgFinder from "../../servises/api";
 export default class ImageGallery extends Component {
   state = {
     imgInfo: null,
@@ -14,60 +14,47 @@ export default class ImageGallery extends Component {
     page: 1,
     status: "idle",
   };
+
   componentDidUpdate(prevProps, prevState) {
     const newValue = this.props.value;
     const oldValue = prevProps.value;
     const newPage = this.state.page;
     const prevPage = prevState.page;
-    const key = `23558220-fb5623a2d9636919de7621278`;
-    let url = `https://pixabay.com/api/?q=${newValue}&page=${newPage}&key=${key}&image_type=photo&orientation=horizontal&per_page=12`;
 
     if (oldValue !== newValue) {
       this.setState({ status: "pending" });
+      imgFinder
+        .fetchImg(newValue, newPage)
 
-      fetch(url)
-        .then((response) => {
-          if (response.ok) {
-            return response.json();
-          }
-        })
-        .then((data) => {
-          return data.hits;
-        })
         .then((imgInfo) => {
           if (imgInfo.length === 0) {
             this.setState({ status: "rejected", error: new Error() });
             return Promise.reject(new Error(`Нет фото на тему ${newValue}`));
           }
-          console.log(imgInfo);
           this.setState({ imgInfo, status: "resolved" });
         })
+
         .catch((error) => this.setState({ error }));
     }
+
     if (prevPage !== newPage) {
-      fetch(url)
-        .then((response) => {
-          if (response.ok) {
-            return response.json();
-          }
-        })
-        .then((data) => {
-          return data.hits;
-        })
+      imgFinder
+        .fetchImg(newValue, newPage)
         .then((imgInfo) => {
           if (imgInfo.length === 0) {
             this.setState({ status: "rejected", error: new Error() });
             return Promise.reject(new Error(`Нет фото на тему ${newValue}`));
           }
-
           this.setState((prevState) => ({
             imgInfo: [...prevState.imgInfo, ...imgInfo],
+            status: "resolved",
           }));
-          this.setState({ status: "resolved" });
         })
+
         .catch((error) => this.setState({ error }));
     }
   }
+
   loadMore = () => {
     this.setState((prevState) => ({ page: prevState.page + 1 }));
   };
@@ -99,6 +86,7 @@ export default class ImageGallery extends Component {
               />
             ))}
           </ul>
+
           <Button onClick={this.loadMore} />
         </>
       );

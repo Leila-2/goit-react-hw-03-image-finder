@@ -6,6 +6,7 @@ class ImageGalleryItem extends Component {
   state = {
     showModal: false,
   };
+
   toggleModal = () => {
     this.setState(({ showModal }) => ({
       showModal: !showModal,
@@ -16,6 +17,7 @@ class ImageGalleryItem extends Component {
     const showModal = this.state.showModal;
     const toggleModal = this.toggleModal;
     const { webformatURL, id, largeImageURL } = this.props;
+
     return (
       <>
         <li key={id} className={s.ImageGalleryItem} onClick={toggleModal}>
